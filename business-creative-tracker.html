@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Creative Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=Karla:wght@400;500;600;700&display=swap');
+
+  :root{
+    --paper:#F6F4EE;
+    --ink:#231F1C;
+    --ink-soft:#6B655D;
+    --line:#D9D3C6;
+    --image-clr:#3E6259;
+    --image-clr-soft:#DCE6E1;
+    --video-clr:#8C4A2F;
+    --video-clr-soft:#F0DDD2;
+    --greet-clr:#6B4C82;
+    --greet-clr-soft:#E7DDEE;
+    --card-bg:#FFFEFB;
+    color-scheme:light;
+  }
+  body[data-theme="dark"]{
+    --paper:#181613;
+    --ink:#F5F1E8;
+    --ink-soft:#B8B0A2;
+    --line:#3A352E;
+    --image-clr:#7FC4AD;
+    --image-clr-soft:#233A32;
+    --video-clr:#E8935F;
+    --video-clr-soft:#3D2A1E;
+    --greet-clr:#C9A8E0;
+    --greet-clr-soft:#352840;
+    --card-bg:#211E1A;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Karla',sans-serif;
+    padding:18px 14px 60px;
+    -webkit-font-smoothing:antialiased;
+    transition:background 0.2s ease, color 0.2s ease;
+  }
+  .wrap{max-width:640px;margin:0 auto;}
+
+  header{margin-bottom:20px;}
+  .header-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+  }
+  .kicker{
+    font-size:13px;
+    color:var(--ink-soft);
+    letter-spacing:0.02em;
+  }
+  h1{
+    font-family:'Newsreader',serif;
+    font-weight:600;
+    font-size:27px;
+    margin:2px 0 4px;
+    line-height:1.15;
+  }
+  h1 em{font-style:italic;font-weight:400;color:var(--image-clr);}
+  .theme-toggle{
+    flex-shrink:0;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--card-bg);
+    color:var(--ink);
+    font-size:16px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-top:2px;
+  }
+
+  .clients-row{display:flex;gap:10px;margin:18px 0;}
+  .client-name-field{flex:1;min-width:0;}
+  .client-name-field label{display:block;font-size:11.5px;color:var(--ink-soft);margin-bottom:4px;}
+  .client-name-field input{
+    width:100%;
+    border:none;
+    border-bottom:2px solid var(--line);
+    background:transparent;
+    font-family:'Newsreader',serif;
+    font-size:16px;
+    font-weight:600;
+    padding:4px 2px;
+    color:var(--ink);
+  }
+  .client-name-field input:focus{outline:none;border-bottom-color:var(--image-clr);}
+
+  .cards{display:flex;flex-direction:column;gap:10px;margin-bottom:22px;}
+  .card{
+    background:var(--card-bg);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:14px 16px;
+  }
+  .card-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+  .card-top .cname{font-family:'Newsreader',serif;font-size:18px;font-weight:600;}
+  .card-top .ctotal{font-size:12px;color:var(--ink-soft);}
+  .meter-row{margin-bottom:9px;}
+  .meter-row:last-child{margin-bottom:0;}
+  .meter-label{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px;}
+  .meter-label .tag{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle;}
+  .meter-track{height:7px;background:var(--line);border-radius:4px;overflow:hidden;position:relative;opacity:0.5;}
+  .meter-fill{height:100%;border-radius:4px;}
+
+  .section-title{
+    font-family:'Newsreader',serif;
+    font-size:17px;
+    font-weight:600;
+    margin:26px 0 12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .section-title .count{font-size:12px;font-weight:400;color:var(--ink-soft);font-family:'Karla',sans-serif;}
+
+  .add-panel{
+    background:var(--card-bg);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:16px;
+  }
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:12px;color:var(--ink-soft);margin-bottom:5px;}
+  .field select, .field input[type=text], .field input[type=date]{
+    width:100%;
+    padding:9px 10px;
+    border:1px solid var(--line);
+    border-radius:3px;
+    background:var(--card-bg);
+    font-family:'Karla',sans-serif;
+    font-size:14.5px;
+    color:var(--ink);
+  }
+  .field select:focus, .field input:focus{outline:none;border-color:var(--image-clr);}
+
+  .type-toggle{display:flex;gap:6px;}
+  .type-toggle button{
+    flex:1;
+    padding:9px 4px;
+    border:1px solid var(--line);
+    background:var(--card-bg);
+    border-radius:3px;
+    font-family:'Karla',sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .type-toggle button.active.image{background:var(--image-clr-soft);border-color:var(--image-clr);color:var(--image-clr);}
+  .type-toggle button.active.video{background:var(--video-clr-soft);border-color:var(--video-clr);color:var(--video-clr);}
+  .type-toggle button.active.greeting{background:var(--greet-clr-soft);border-color:var(--greet-clr);color:var(--greet-clr);}
+
+  .submit-btn{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:3px;
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Karla',sans-serif;
+    font-size:14.5px;
+    font-weight:700;
+    cursor:pointer;
+    margin-top:2px;
+  }
+  .submit-btn:active{opacity:0.85;}
+
+  .period-toggle{
+    display:flex;
+    gap:6px;
+    margin-bottom:12px;
+  }
+  .period-toggle button{
+    padding:7px 14px;
+    border:1px solid var(--line);
+    background:var(--card-bg);
+    border-radius:16px;
+    font-family:'Karla',sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .period-toggle button.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+
+  .period-group{margin-bottom:14px;}
+  .period-group:last-child{margin-bottom:0;}
+  .period-group-name{font-family:'Newsreader',serif;font-size:15px;font-weight:600;margin-bottom:6px;}
+  .period-table{border:1px solid var(--line);border-radius:3px;overflow:hidden;}
+  .period-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:9px 12px;
+    border-bottom:1px solid var(--line);
+    font-size:13px;
+  }
+  .period-row:last-child{border-bottom:none;}
+  .period-row .plabel{font-weight:600;}
+  .period-row .pcounts{color:var(--ink-soft);font-size:12px;text-align:right;}
+  .period-row .pcounts b{color:var(--ink);font-weight:700;}
+  .period-empty{color:var(--ink-soft);font-size:13px;padding:10px 2px;}
+
+  .log-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);}
+  .log-item:last-child{border-bottom:none;}
+  .log-dot{width:9px;height:9px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+  .log-main{flex:1;min-width:0;}
+  .log-name{font-size:14.5px;font-weight:600;}
+  .log-meta{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .del-btn{background:none;border:none;color:var(--ink-soft);font-size:16px;cursor:pointer;padding:0 2px;line-height:1;}
+  .empty{color:var(--ink-soft);font-size:13.5px;padding:16px 0;text-align:center;}
+
+  .report-btn{
+    width:100%;
+    padding:11px;
+    border:1px solid var(--ink);
+    background:transparent;
+    color:var(--ink);
+    border-radius:3px;
+    font-family:'Karla',sans-serif;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    margin:26px 0 10px;
+  }
+  .report-box{
+    background:var(--card-bg);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:16px;
+    font-size:13.5px;
+    line-height:1.7;
+    white-space:pre-wrap;
+    display:none;
+    margin-bottom:20px;
+    color:var(--ink);
+  }
+  .report-box.show{display:block;}
+  .copy-btn{
+    display:inline-block;
+    margin-top:10px;
+    font-size:12px;
+    color:var(--image-clr);
+    background:none;
+    border:none;
+    cursor:pointer;
+    font-weight:600;
+    padding:0;
+  }
+  .status-line{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:8px;min-height:16px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="header-top">
+      <div>
+        <div class="kicker">Ongoing creative output · no fixed target</div>
+        <h1>Business <em>Creative</em> Log</h1>
+      </div>
+      <button id="themeToggle" class="theme-toggle" title="Toggle dark mode">◐</button>
+    </div>
+  </header>
+
+  <div class="clients-row">
+    <div class="client-name-field">
+      <label>Business A</label>
+      <input type="text" id="clientAName" value="My Viscards" maxlength="30">
+    </div>
+    <div class="client-name-field">
+      <label>Business B</label>
+      <input type="text" id="clientBName" value="Arvesta Clothing" maxlength="30">
+    </div>
+  </div>
+
+  <div class="cards" id="cardsContainer"></div>
+
+  <div class="add-panel">
+    <div class="section-title" style="margin-top:0;">Log a creative</div>
+    <div class="field">
+      <label>Business</label>
+      <select id="entryClient">
+        <option value="A"></option>
+        <option value="B"></option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Type</label>
+      <div class="type-toggle">
+        <button type="button" class="active image" id="btnImage" data-type="image">Image</button>
+        <button type="button" class="video" id="btnVideo" data-type="video">Video</button>
+        <button type="button" class="greeting" id="btnGreeting" data-type="greeting">Festival Greeting</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Creative name</label>
+      <input type="text" id="entryName" placeholder="e.g. Diwali offer post 3">
+    </div>
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="entryDate">
+    </div>
+    <button class="submit-btn" id="addBtn">Add to log</button>
+    <div class="status-line" id="statusLine"></div>
+  </div>
+
+  <div class="section-title">Weekly / monthly breakdown</div>
+  <div class="period-toggle">
+    <button class="active" id="btnWeekly" data-period="weekly">Weekly</button>
+    <button id="btnMonthly" data-period="monthly">Monthly</button>
+  </div>
+  <div id="periodContainer"></div>
+
+  <div class="section-title">Full log <span class="count" id="logCount"></span></div>
+  <div id="logList"></div>
+
+  <button class="report-btn" id="reportBtn">Generate report</button>
+  <div class="report-box" id="reportBox"></div>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'business-creative-tracker-v1';
+const TYPE_META = {
+  image:{label:'Image', colorVar:'--image-clr', softVar:'--image-clr-soft'},
+  video:{label:'Video', colorVar:'--video-clr', softVar:'--video-clr-soft'},
+  greeting:{label:'Festival Greeting', colorVar:'--greet-clr', softVar:'--greet-clr-soft'}
+};
+
+let state = {
+  clientAName: 'My Viscards',
+  clientBName: 'Arvesta Clothing',
+  entries: [], // {id, client:'A'|'B', type:'image'|'video'|'greeting', name, date}
+  theme: 'light'
+};
+
+let currentType = 'image';
+let currentPeriod = 'weekly';
+
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      state = Object.assign(state, parsed);
+    }
+  }catch(e){}
+  document.getElementById('clientAName').value = state.clientAName;
+  document.getElementById('clientBName').value = state.clientBName;
+  document.getElementById('entryDate').value = todayISO();
+  applyTheme();
+  refreshClientOptionLabels();
+  render();
+}
+
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }catch(e){
+    setStatus('Could not save — try again.');
+  }
+}
+
+function applyTheme(){
+  document.body.setAttribute('data-theme', state.theme === 'dark' ? 'dark' : 'light');
+  document.getElementById('themeToggle').textContent = state.theme === 'dark' ? '☀' : '◐';
+}
+
+function setStatus(msg){
+  const el = document.getElementById('statusLine');
+  el.textContent = msg;
+  if(msg) setTimeout(()=>{ if(el.textContent===msg) el.textContent=''; }, 2200);
+}
+
+function refreshClientOptionLabels(){
+  document.querySelector('#entryClient option[value="A"]').textContent = state.clientAName;
+  document.querySelector('#entryClient option[value="B"]').textContent = state.clientBName;
+}
+
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+function formatDate(iso){
+  if(!iso) return '';
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+}
+
+function clientCounts(client){
+  const c = {image:0, video:0, greeting:0};
+  state.entries.filter(e=>e.client===client).forEach(e=>{ c[e.type]++; });
+  return c;
+}
+
+function renderCard(client, name){
+  const c = clientCounts(client);
+  const total = c.image + c.video + c.greeting;
+  const maxVal = Math.max(c.image, c.video, c.greeting, 1);
+  const rows = ['image','video','greeting'].map(type=>{
+    const meta = TYPE_META[type];
+    const pct = (c[type]/maxVal)*100;
+    return `
+      <div class="meter-row">
+        <div class="meter-label">
+          <span><span class="tag" style="background:var(${meta.colorVar})"></span>${meta.label} — ${c[type]}</span>
+        </div>
+        <div class="meter-track"><div class="meter-fill" style="width:${pct}%; background:var(${meta.colorVar}); opacity:1;"></div></div>
+      </div>
+    `;
+  }).join('');
+  return `
+    <div class="card">
+      <div class="card-top">
+        <div class="cname">${escapeHtml(name)}</div>
+        <div class="ctotal">${total} total</div>
+      </div>
+      ${rows}
+    </div>
+  `;
+}
+
+// ISO week start (Monday)
+function weekStart(dateStr){
+  const d = new Date(dateStr + 'T00:00:00');
+  const day = (d.getDay() + 6) % 7; // 0 = Monday
+  d.setDate(d.getDate() - day);
+  return d;
+}
+function weekLabel(dateStr){
+  const start = weekStart(dateStr);
+  const end = new Date(start); end.setDate(end.getDate()+6);
+  const fmt = (dt)=> dt.toLocaleDateString('en-GB', {day:'numeric', month:'short'});
+  return `Week of ${fmt(start)} – ${fmt(end)}`;
+}
+function weekKey(dateStr){
+  const start = weekStart(dateStr);
+  return start.toISOString().slice(0,10);
+}
+function monthLabel(dateStr){
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-GB', {month:'long', year:'numeric'});
+}
+function monthKey(dateStr){
+  return dateStr.slice(0,7);
+}
+
+function groupEntries(client, period){
+  const keyFn = period === 'weekly' ? weekKey : monthKey;
+  const labelFn = period === 'weekly' ? weekLabel : monthLabel;
+  const groups = {};
+  state.entries.filter(e=>e.client===client).forEach(e=>{
+    const k = keyFn(e.date);
+    if(!groups[k]) groups[k] = {label: labelFn(e.date), image:0, video:0, greeting:0, key:k};
+    groups[k][e.type]++;
+  });
+  return Object.values(groups).sort((a,b)=> b.key.localeCompare(a.key));
+}
+
+function renderPeriodSection(){
+  ['A','B'].forEach((client, idx)=>{
+    // rendered together below in one container per business
+  });
+  const container = document.getElementById('periodContainer');
+  const businesses = [['A', state.clientAName], ['B', state.clientBName]];
+  container.innerHTML = businesses.map(([client, name])=>{
+    const groups = groupEntries(client, currentPeriod);
+    const rowsHtml = groups.length ? groups.map(g=>{
+      const total = g.image + g.video + g.greeting;
+      return `
+        <div class="period-row">
+          <span class="plabel">${escapeHtml(g.label)}</span>
+          <span class="pcounts"><b>${total}</b> total &nbsp;·&nbsp; ${g.image} img, ${g.video} vid, ${g.greeting} greet</span>
+        </div>
+      `;
+    }).join('') : `<div class="period-empty">No creatives logged yet.</div>`;
+    return `
+      <div class="period-group">
+        <div class="period-group-name">${escapeHtml(name)}</div>
+        <div class="period-table">${rowsHtml}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function render(){
+  document.getElementById('cardsContainer').innerHTML =
+    renderCard('A', state.clientAName) + renderCard('B', state.clientBName);
+  refreshClientOptionLabels();
+  renderPeriodSection();
+
+  const sorted = state.entries.slice().sort((a,b)=> (b.date||'').localeCompare(a.date||'') || b.id - a.id);
+  document.getElementById('logCount').textContent = `${state.entries.length} logged`;
+
+  const listEl = document.getElementById('logList');
+  if(sorted.length === 0){
+    listEl.innerHTML = `<div class="empty">Nothing logged yet — add your first creative above.</div>`;
+    return;
+  }
+  listEl.innerHTML = sorted.map(e => {
+    const clientLabel = e.client === 'A' ? state.clientAName : state.clientBName;
+    const meta = TYPE_META[e.type];
+    return `
+      <div class="log-item" data-id="${e.id}">
+        <div class="log-dot" style="background:var(${meta.colorVar})"></div>
+        <div class="log-main">
+          <div class="log-name">${escapeHtml(e.name)}</div>
+          <div class="log-meta">${escapeHtml(clientLabel)} · ${meta.label} · ${formatDate(e.date)}</div>
+        </div>
+        <button class="del-btn" data-del="${e.id}" title="Remove">✕</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function buildReportText(){
+  const parts = ['A','B'].map(client=>{
+    const name = client === 'A' ? state.clientAName : state.clientBName;
+    const c = clientCounts(client);
+    const total = c.image + c.video + c.greeting;
+    let lines = [];
+    lines.push(`${name} — ${total} creatives total`);
+    lines.push(`  Images: ${c.image}   Videos: ${c.video}   Festival greetings: ${c.greeting}`);
+
+    const weekly = groupEntries(client, 'weekly');
+    if(weekly.length){
+      lines.push('  Weekly breakdown:');
+      weekly.forEach(g=>{
+        lines.push(`    - ${g.label}: ${g.image + g.video + g.greeting} total (${g.image} img, ${g.video} vid, ${g.greeting} greet)`);
+      });
+    }
+    const monthly = groupEntries(client, 'monthly');
+    if(monthly.length){
+      lines.push('  Monthly breakdown:');
+      monthly.forEach(g=>{
+        lines.push(`    - ${g.label}: ${g.image + g.video + g.greeting} total (${g.image} img, ${g.video} vid, ${g.greeting} greet)`);
+      });
+    }
+    const entries = state.entries.filter(e=>e.client===client).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+    if(entries.length){
+      lines.push('  Creatives:');
+      entries.forEach(e=>{
+        lines.push(`    - ${formatDate(e.date)} — ${e.name} (${TYPE_META[e.type].label})`);
+      });
+    }
+    return lines.join('\n');
+  });
+  return parts.join('\n\n');
+}
+
+// Events
+document.getElementById('clientAName').addEventListener('change', (e)=>{
+  state.clientAName = e.target.value.trim() || 'My Viscards';
+  saveState(); render();
+});
+document.getElementById('clientBName').addEventListener('change', (e)=>{
+  state.clientBName = e.target.value.trim() || 'Arvesta Clothing';
+  saveState(); render();
+});
+
+function setActiveTypeButton(){
+  ['image','video','greeting'].forEach(t=>{
+    const id = t === 'image' ? 'btnImage' : t === 'video' ? 'btnVideo' : 'btnGreeting';
+    document.getElementById(id).classList.toggle('active', t === currentType);
+  });
+}
+document.getElementById('btnImage').addEventListener('click', ()=>{ currentType='image'; setActiveTypeButton(); });
+document.getElementById('btnVideo').addEventListener('click', ()=>{ currentType='video'; setActiveTypeButton(); });
+document.getElementById('btnGreeting').addEventListener('click', ()=>{ currentType='greeting'; setActiveTypeButton(); });
+
+document.getElementById('addBtn').addEventListener('click', ()=>{
+  const client = document.getElementById('entryClient').value;
+  const name = document.getElementById('entryName').value.trim();
+  const date = document.getElementById('entryDate').value || todayISO();
+  if(!name){ setStatus('Enter a creative name first.'); return; }
+  state.entries.push({ id: Date.now(), client, type: currentType, name, date });
+  document.getElementById('entryName').value = '';
+  saveState();
+  render();
+  setStatus('Added.');
+});
+
+document.getElementById('logList').addEventListener('click', (e)=>{
+  const btn = e.target.closest('[data-del]');
+  if(!btn) return;
+  const id = Number(btn.getAttribute('data-del'));
+  state.entries = state.entries.filter(en => en.id !== id);
+  saveState();
+  render();
+});
+
+document.getElementById('btnWeekly').addEventListener('click', ()=>{
+  currentPeriod = 'weekly';
+  document.getElementById('btnWeekly').classList.add('active');
+  document.getElementById('btnMonthly').classList.remove('active');
+  renderPeriodSection();
+});
+document.getElementById('btnMonthly').addEventListener('click', ()=>{
+  currentPeriod = 'monthly';
+  document.getElementById('btnMonthly').classList.add('active');
+  document.getElementById('btnWeekly').classList.remove('active');
+  renderPeriodSection();
+});
+
+document.getElementById('reportBtn').addEventListener('click', ()=>{
+  const box = document.getElementById('reportBox');
+  box.textContent = buildReportText();
+  box.classList.toggle('show');
+  if(box.classList.contains('show')){
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'copy-btn';
+    copyBtn.textContent = 'Copy report text';
+    copyBtn.onclick = ()=>{
+      navigator.clipboard.writeText(buildReportText()).then(()=>{
+        copyBtn.textContent = 'Copied!';
+        setTimeout(()=>{ copyBtn.textContent = 'Copy report text'; }, 1500);
+      });
+    };
+    box.appendChild(document.createElement('br'));
+    box.appendChild(copyBtn);
+  }
+});
+
+document.getElementById('themeToggle').addEventListener('click', ()=>{
+  state.theme = state.theme === 'dark' ? 'light' : 'dark';
+  applyTheme();
+  saveState();
+});
+
+loadState();
+</script>
+</body>
+</html>
