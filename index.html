@@ -262,6 +262,26 @@
     padding:0;
   }
   .status-line{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:8px;min-height:16px;}
+  .data-tools{
+    display:flex;
+    gap:6px;
+    margin-top:10px;
+  }
+  .data-tool-btn{
+    flex:1;
+    padding:8px 10px;
+    border:1px solid var(--line);
+    background:var(--card-bg);
+    color:var(--ink);
+    border-radius:3px;
+    font-family:'Karla',sans-serif;
+    font-size:12.5px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .data-tool-btn:active{opacity:0.8;}
+  .data-import-input{display:none;}
+
 </style>
 </head>
 <body>
@@ -331,6 +351,12 @@
 
   <button class="report-btn" id="reportBtn">Generate report</button>
   <div class="report-box" id="reportBox"></div>
+  <div class="data-tools">
+    <button type="button" class="data-tool-btn" id="exportBtn">Export data</button>
+    <button type="button" class="data-tool-btn" id="importBtn">Import data</button>
+    <input type="file" id="importFile" class="data-import-input" accept=".json,application/json">
+  </div>
+
 
 </div>
 
@@ -565,6 +591,93 @@ function buildReportText(){
   });
   return parts.join('\n\n');
 }
+
+
+function exportData(){
+  try{
+    const backup = {
+      app: 'Business Creative Tracker',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      state: state
+    };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = new Date().toISOString().slice(0,10);
+    a.href = url;
+    a.download = `business-creative-tracker-backup-${stamp}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    setStatus('Data exported.');
+  }catch(e){
+    setStatus('Could not export data.');
+  }
+}
+
+function isValidImportedState(candidate){
+  return candidate &&
+    typeof candidate === 'object' &&
+    typeof candidate.clientAName === 'string' &&
+    typeof candidate.clientBName === 'string' &&
+    Array.isArray(candidate.entries) &&
+    (candidate.theme === 'light' || candidate.theme === 'dark');
+}
+
+function importData(file){
+  if(!file) return;
+  const reader = new FileReader();
+
+  reader.onload = ()=>{
+    try{
+      const parsed = JSON.parse(reader.result);
+      const importedState = parsed && parsed.state ? parsed.state : parsed;
+
+      if(!isValidImportedState(importedState)){
+        throw new Error('Invalid tracker backup');
+      }
+
+      // Only replace the app state after the complete file has been
+      // successfully parsed and validated.
+      state = {
+        clientAName: importedState.clientAName,
+        clientBName: importedState.clientBName,
+        entries: importedState.entries,
+        theme: importedState.theme
+      };
+
+      saveState();
+      document.getElementById('clientAName').value = state.clientAName;
+      document.getElementById('clientBName').value = state.clientBName;
+      refreshClientOptionLabels();
+      applyTheme();
+      render();
+      setStatus('Data imported.');
+    }catch(e){
+      setStatus('Import failed — invalid backup file.');
+    }
+  };
+
+  reader.onerror = ()=>{
+    setStatus('Could not read the backup file.');
+  };
+
+  reader.readAsText(file);
+}
+
+document.getElementById('exportBtn').addEventListener('click', exportData);
+
+document.getElementById('importBtn').addEventListener('click', ()=>{
+  document.getElementById('importFile').click();
+});
+
+document.getElementById('importFile').addEventListener('change', (e)=>{
+  const file = e.target.files && e.target.files[0];
+  importData(file);
+  e.target.value = '';
+});
 
 // Events
 document.getElementById('clientAName').addEventListener('change', (e)=>{
